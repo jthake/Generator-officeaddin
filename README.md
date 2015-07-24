@@ -1,6 +1,6 @@
 # Generator-officeaddin
 
-this is a new initiative to enable web developers to quickly get up and running with Office add-ins.
+This is a new initiative to enable web developers to quickly get up and running with Office add-ins.
 
 Full credit here to the ASP.NET team who have already built Yeoman Generators ( http://blogs.msdn.com/b/webdev/archive/2014/12/17/yeoman-generators-for-asp-net-vnext.aspx) that helped me greatly get started here.
 
