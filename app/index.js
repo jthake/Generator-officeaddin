@@ -16,7 +16,7 @@ module.exports = yeoman.Base.extend({
 	},
   
 	init: function() {
-		this.log(yosay('Welcome to the marvellous Office add-in generator!'));
+		this.log(yosay('Welcome command line junkies to the Office add-in generator!'));
 		this.templatedata = {};
 	},
   
@@ -31,8 +31,14 @@ module.exports = yeoman.Base.extend({
 		      name: 'Angular JS standalone web application',
 		      value: 'angular'
 		    }, {
-		      name: 'Outlook add-in',
-		      value: 'outlook'
+		      name: 'Mail add-in',
+		      value: 'mail'
+		    }, {
+		      name: 'Task Pane add-in',
+		      value: 'taskpane'
+		    }, {
+		      name: 'Content add-in',
+		      value: 'content'
 		    }
 		  ]
 		}];
@@ -41,7 +47,8 @@ module.exports = yeoman.Base.extend({
 			this.templatedata.type = props.type;
 			done();
 		}.bind(this));
-	},
+	}
+	,
 	
 	askForName: function() {
 		var done = this.async();
@@ -55,63 +62,104 @@ module.exports = yeoman.Base.extend({
 		}.bind(this));
 	},
 	
+
 	askForTenant: function() {
-		var done = this.async();
-		var prompts = [{
-		  name: 'tenantName',
-		  message: 'What\'s the name of your tenant?'
-		}];
-		this.prompt(prompts, function(props) {
-		  this.templatedata.tenantName = props.tenantName;
-		  done();
-		}.bind(this));
+		if (this.templatedata.type == 'angular')
+		{
+			var done = this.async();
+			var prompts = [{
+			  name: 'tenantName',
+			  message: 'What\'s the name of your tenant?'
+			}];
+			this.prompt(prompts, function(props) {
+			  this.templatedata.tenantName = props.tenantName;
+			  done();
+			}.bind(this));
+		}
 	},
 	
 	askForClientId: function() {
-		var done = this.async();
-		var prompts = [{
-		  name: 'clientId',
-		  message: 'What\'s the Azure AD client id?',
-		  default: guid.v4()
-		}];
-		this.prompt(prompts, function(props) {
-		  this.templatedata.clientId = props.clientId;
-		  done();
-		}.bind(this));
+		if (this.templatedata.type == 'angular')
+		{
+			var done = this.async();
+			var prompts = [{
+			  name: 'clientId',
+			  message: 'What\'s the Azure AD client id?',
+			  default: guid.v4()
+			}];
+			this.prompt(prompts, function(props) {
+			  this.templatedata.clientId = props.clientId;
+			  done();
+			}.bind(this));
+		}
 	},
   
-	writing: function() {
-	    this.sourceRoot(path.join(__dirname, './templates/projects'));
-	
+	writing: function() {		
+	    var projectsRoot = path.join(__dirname, '../templates/projects/');
+	    this.sourceRoot(projectsRoot + this.templatedata.type);	
+		
 	    switch (this.templatedata.type) {	
 	      case 'angular':
 		    this.templatedata.startPage = "/index.html";
 		    this.templatedata.startDir = "/";
-	        this.sourceRoot(path.join(__dirname, '../templates/projects/' + this.templatedata.type ));
+			
 	        this.fs.copy(this.sourceRoot() + '/index.html', this.templatedata.applicationName + '/index.html');
 	        this.fs.copy(this.sourceRoot() + '/styles.css', this.templatedata.applicationName + '/styles.css');
-	        this.fs.copy(this.templatePath('/assets'), this.destinationPath(this.templatedata.applicationName + '/assets'));
-	        this.fs.copy(this.templatePath('/controllers'), this.destinationPath(this.templatedata.applicationName + '/controllers'));
-	        this.fs.copy(this.templatePath('/scripts'), this.destinationPath(this.templatedata.applicationName + '/scripts'));
-	        this.fs.copy(this.templatePath('/views'), this.destinationPath(this.templatedata.applicationName + '/views'));
+	        this.fs.copy(this.sourceRoot() + '/assets', this.destinationPath(this.templatedata.applicationName + '/assets'));
+	        this.fs.copy(this.sourceRoot() + '/controllers', this.destinationPath(this.templatedata.applicationName + '/controllers'));
+	        this.fs.copy(this.sourceRoot() + '/scripts', this.destinationPath(this.templatedata.applicationName + '/scripts'));
+	        this.fs.copy(this.sourceRoot() + '/views', this.destinationPath(this.templatedata.applicationName + '/views'));
 			
 			//inject the environment settings
-			this.fs.copyTpl(this.templatePath('/scripts/app.js'), this.templatedata.applicationName + '/scripts/app.js', this.templatedata);
-			this.fs.copyTpl(path.join(__dirname, '../templates/projects/server.js'), this.templatedata.applicationName + '/server.js', this.templatedata);
-			this.fs.copyTpl(path.join(__dirname, '../templates/projects/package.json'), this.templatedata.applicationName + '/package.json', this.templatedata);
+			this.fs.copyTpl(this.sourceRoot() + '/scripts/app.js', this.templatedata.applicationName + '/scripts/app.js', this.templatedata);
+			this.fs.copyTpl(projectsRoot + '/server.js', this.templatedata.applicationName + '/server.js', this.templatedata);
+			this.fs.copyTpl(projectsRoot + '/package.json', this.templatedata.applicationName + '/package.json', this.templatedata);
 	        break;
 	
-	      case 'outlook':
+	      case 'mail':
 		    this.templatedata.startPage = "/AppCompose/Home/home.html";
 		    this.templatedata.startDir = "/AppCompose";
-	        this.sourceRoot(path.join(__dirname, '../templates/projects/' + this.templatedata.type));
-	        this.fs.copy(this.templatePath('/Content'), this.destinationPath(this.templatedata.applicationName + '/Content'));
-	        this.fs.copy(this.templatePath('/AppCompose/Home'), this.destinationPath(this.templatedata.applicationName + '/AppCompose/Home'));
+
+	        this.fs.copy(this.sourceRoot() +'/AppCompose/Home', this.destinationPath(this.templatedata.applicationName + '/AppCompose/Home'));
+	        this.fs.copy(this.sourceRoot() +'/AppRead/Home', this.destinationPath(this.templatedata.applicationName + '/AppRead/Home'));
+	        this.fs.copy(this.sourceRoot() +'/Content', this.destinationPath(this.templatedata.applicationName + '/Content'));
+	        this.fs.copy(this.sourceRoot() +'/Images', this.destinationPath(this.templatedata.applicationName + '/Images'));
+	        this.fs.copy(this.sourceRoot() +'/Scripts', this.destinationPath(this.templatedata.applicationName + '/Scripts'));
 			
+			//inject the environment settings
 			this.fs.copyTpl(this.sourceRoot() + '/manifest.xml', this.templatedata.applicationName + '/manifest.xml', this.templatedata);
-			this.fs.copyTpl(this.sourceRoot() + '/AppCompose/Home/home.html', this.templatedata.applicationName + '/AppCompose/Home/home.html', this.templatedata);
-			this.fs.copyTpl(path.join(__dirname, '../templates/projects/server.js'), this.templatedata.applicationName + '/server.js', this.templatedata);
-			this.fs.copyTpl(path.join(__dirname, '../templates/projects/package.json'), this.templatedata.applicationName + '/package.json', this.templatedata);
+			this.fs.copyTpl(projectsRoot + '/server.js', this.templatedata.applicationName + '/server.js', this.templatedata);
+			this.fs.copyTpl(projectsRoot + '/package.json', this.templatedata.applicationName + '/package.json', this.templatedata);
+	        break;
+			
+	      case 'taskpane':
+		    this.templatedata.startPage = "/App/Home/home.html";
+		    this.templatedata.startDir = "/App";
+
+	        this.fs.copy(this.sourceRoot() +'/App', this.destinationPath(this.templatedata.applicationName + '/App'));
+	        this.fs.copy(this.sourceRoot() +'/Content', this.destinationPath(this.templatedata.applicationName + '/Content'));
+	        this.fs.copy(this.sourceRoot() +'/Images', this.destinationPath(this.templatedata.applicationName + '/Images'));
+	        this.fs.copy(this.sourceRoot() +'/Scripts', this.destinationPath(this.templatedata.applicationName + '/Scripts'));
+			
+			//inject the environment settings
+			this.fs.copyTpl(this.sourceRoot() + '/manifest.xml', this.templatedata.applicationName + '/manifest.xml', this.templatedata);
+			this.fs.copyTpl(projectsRoot + '/server.js', this.templatedata.applicationName + '/server.js', this.templatedata);
+			this.fs.copyTpl(projectsRoot + '/package.json', this.templatedata.applicationName + '/package.json', this.templatedata);
+	        break;
+			
+	      case 'content':
+		    this.templatedata.startPage = "/App/Home/home.html";
+		    this.templatedata.startDir = "/App";
+
+	        this.fs.copy(this.sourceRoot() +'/App', this.destinationPath(this.templatedata.applicationName + '/App'));
+	        this.fs.copy(this.sourceRoot() +'/Content', this.destinationPath(this.templatedata.applicationName + '/Content'));
+	        this.fs.copy(this.sourceRoot() +'/Images', this.destinationPath(this.templatedata.applicationName + '/Images'));
+	        this.fs.copy(this.sourceRoot() +'/Scripts', this.destinationPath(this.templatedata.applicationName + '/Scripts'));
+			
+			//inject the environment settings
+			this.fs.copyTpl(this.sourceRoot() + '/manifest.xml', this.templatedata.applicationName + '/manifest.xml', this.templatedata);
+			this.fs.copyTpl(projectsRoot + '/server.js', this.templatedata.applicationName + '/server.js', this.templatedata);
+			this.fs.copyTpl(projectsRoot + '/package.json', this.templatedata.applicationName + '/package.json', this.templatedata);
 	        break;
 		}
 	},
