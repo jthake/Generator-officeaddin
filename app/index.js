@@ -93,6 +93,138 @@ module.exports = yeoman.Base.extend({
 			}.bind(this));
 		}
 	},
+	
+
+	askForMail: function() {
+		if (this.templatedata.type == 'mail')
+		{
+			var done = this.async();
+			
+			var prompts = [{
+			  type: 'checkbox',
+			  name: 'type',
+			  message: 'Where do you want your mail add-in to appear? (Use space bar)',
+			  choices: [
+				{
+			      name: 'E-mail message - read form',
+			      value: 'mailRead',
+        		  checked: true
+			    }, {
+			      name: 'E-mail message - compose form',
+			      value: 'mailCompose',
+        		  checked: true
+			    }, 
+				{
+			      name: 'Appointment read form',
+			      value: 'appointmentRead',
+        		  checked: true
+			    }, {
+			      name: 'Appointment compose form',
+			      value: 'appointmentCompose',
+        		  checked: true
+			    }
+			  ],
+			    validate: function( answer ) {
+			      if ( answer.length < 1 ) {
+			        return "You must choose at least option.";
+			      }
+			      return true;
+			    }
+			}];	    
+			
+			this.prompt(prompts, function(props) {
+				this.mailSettings = props;
+				done();
+			}.bind(this));
+		}
+	},
+	
+	askForTaskPane: function() {
+		if (this.templatedata.type == 'taskpane')
+		{
+			var done = this.async();
+			
+			var prompts = [{
+			  type: 'checkbox',
+			  name: 'type',
+			  message: 'Where do you want your task pane add-in to appear? (Use space bar)',
+			  choices: [
+				{
+			      name: 'Excel',
+			      value: 'excelTaskPane',
+        		  checked: true
+			    }, 
+				{
+			      name: 'PowerPoint',
+			      value: 'powerpointTaskPane',
+        		  checked: true
+			    }, 
+				{
+			      name: 'project',
+			      value: 'projectTaskPane',
+        		  checked: true
+			    }, 
+				{
+			      name: 'Word',
+			      value: 'wordTaskPane',
+        		  checked: true
+			    }
+			  ],
+			    validate: function( answer ) {
+			      if ( answer.length < 1 ) {
+			        return "You must choose at least option.";
+			      }
+			      return true;
+			    }
+			}];	    
+			
+			this.prompt(prompts, function(props) {
+				this.taskpaneSettings = props;
+				done();
+			}.bind(this));
+		}
+	},
+  
+	askForContent: function() {
+		if (this.templatedata.type == 'content')
+		{
+			var done = this.async();
+			
+			var prompts = [{
+			  type: 'checkbox',
+			  name: 'type',
+			  message: 'Where do you want your content add-in to appear? (Use space bar)',
+			  choices: [
+				{
+			      name: 'Access',
+			      value: 'accessContent',
+        		  checked: true
+			    },
+				{
+			      name: 'Excel',
+			      value: 'excelContent',
+        		  checked: true
+			    }, 
+				{
+			      name: 'PowerPoint',
+			      value: 'powerpointContent',
+        		  checked: true
+			    }
+			  ],
+			    validate: function( answer ) {
+			      if ( answer.length < 1 ) {
+			        return "You must choose at least option.";
+			      }
+			      return true;
+			    }
+			}];	    
+			
+			this.prompt(prompts, function(props) {
+				this.contentSettings = props;
+				done();
+			}.bind(this));
+		}
+	},
   
 	writing: function() {		
 	    var projectsRoot = path.join(__dirname, '../templates/projects/');
@@ -120,13 +252,19 @@ module.exports = yeoman.Base.extend({
 		    this.templatedata.startPage = "/AppCompose/Home/home.html";
 		    this.templatedata.startDir = "/AppCompose";
 
-	        this.fs.copy(this.sourceRoot() +'/AppCompose/Home', this.destinationPath(this.templatedata.applicationName + '/AppCompose/Home'));
-	        this.fs.copy(this.sourceRoot() +'/AppRead/Home', this.destinationPath(this.templatedata.applicationName + '/AppRead/Home'));
+			//based on mailRead, mailCompose,appointmentRead ,appointmentCompose copy stuff		
+			if ((this.mailSettings.type.indexOf('mailCompose') != -1) || (this.mailSettings.type.indexOf('appointmentCompose') != -1))
+	        	this.fs.copy(this.sourceRoot() +'/AppCompose/Home', this.destinationPath(this.templatedata.applicationName + '/AppCompose/Home'));
+	        
+			if ((this.mailSettings.type.indexOf('mailRead') != -1) || (this.mailSettings.type.indexOf('appointmentRead') != -1))
+				this.fs.copy(this.sourceRoot() +'/AppRead/Home', this.destinationPath(this.templatedata.applicationName + '/AppRead/Home'));
+				
 	        this.fs.copy(this.sourceRoot() +'/Content', this.destinationPath(this.templatedata.applicationName + '/Content'));
 	        this.fs.copy(this.sourceRoot() +'/Images', this.destinationPath(this.templatedata.applicationName + '/Images'));
 	        this.fs.copy(this.sourceRoot() +'/Scripts', this.destinationPath(this.templatedata.applicationName + '/Scripts'));
 			
 			//inject the environment settings
+			//TODO: based on mailRead,mailCompose ,appointmentRead ,appointmentCompose configure stuff
 			this.fs.copyTpl(this.sourceRoot() + '/manifest.xml', this.templatedata.applicationName + '/manifest.xml', this.templatedata);
 			this.fs.copyTpl(projectsRoot + '/server.js', this.templatedata.applicationName + '/server.js', this.templatedata);
 			this.fs.copyTpl(projectsRoot + '/package.json', this.templatedata.applicationName + '/package.json', this.templatedata);
@@ -135,13 +273,14 @@ module.exports = yeoman.Base.extend({
 	      case 'taskpane':
 		    this.templatedata.startPage = "/App/Home/home.html";
 		    this.templatedata.startDir = "/App";
-
+			
 	        this.fs.copy(this.sourceRoot() +'/App', this.destinationPath(this.templatedata.applicationName + '/App'));
 	        this.fs.copy(this.sourceRoot() +'/Content', this.destinationPath(this.templatedata.applicationName + '/Content'));
 	        this.fs.copy(this.sourceRoot() +'/Images', this.destinationPath(this.templatedata.applicationName + '/Images'));
 	        this.fs.copy(this.sourceRoot() +'/Scripts', this.destinationPath(this.templatedata.applicationName + '/Scripts'));
 			
 			//inject the environment settings
+			//TODO: based on excelTaskPane ,powerpointTaskPane,projectTaskPane,wordTaskPane configure stuff
 			this.fs.copyTpl(this.sourceRoot() + '/manifest.xml', this.templatedata.applicationName + '/manifest.xml', this.templatedata);
 			this.fs.copyTpl(projectsRoot + '/server.js', this.templatedata.applicationName + '/server.js', this.templatedata);
 			this.fs.copyTpl(projectsRoot + '/package.json', this.templatedata.applicationName + '/package.json', this.templatedata);
@@ -157,6 +296,7 @@ module.exports = yeoman.Base.extend({
 	        this.fs.copy(this.sourceRoot() +'/Scripts', this.destinationPath(this.templatedata.applicationName + '/Scripts'));
 			
 			//inject the environment settings
+			//TODO: based on this.accessContent, this.excelContent, this.powerpointContent  configure stuff
 			this.fs.copyTpl(this.sourceRoot() + '/manifest.xml', this.templatedata.applicationName + '/manifest.xml', this.templatedata);
 			this.fs.copyTpl(projectsRoot + '/server.js', this.templatedata.applicationName + '/server.js', this.templatedata);
 			this.fs.copyTpl(projectsRoot + '/package.json', this.templatedata.applicationName + '/package.json', this.templatedata);
