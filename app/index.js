@@ -304,6 +304,13 @@ module.exports = yeoman.Base.extend({
 		}
 	},
 
+	//TODO: create self sign cert and run node server https://github.com/andrewconnell/TrainingContent/blob/master/O3657/O3657-3%20Building%20Office%20Apps%20for%20Outlook%20Using%20Angular%20and%20Material%20Design/self-signed-cert-osx.md
+	//TODO: Deploy the manifest file to App Catalog in either Exchange or SharePoint
+	//TODO: Open browser to either Outlook Online, Word Online, PowerPoint Online or Excel Online
+	//TODO: Pull Azure AD client ID from API after login prompt
+	//TODO: command prompt overrides on "yo officeaddin"
+	//TODO: integrate typescript definitions into project
+	
 	end: function() {
 		this.log('\r\n');
 		this.log('Your project is now created, you can use the following commands to get going');
