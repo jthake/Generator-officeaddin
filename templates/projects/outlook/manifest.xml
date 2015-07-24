@@ -18,7 +18,7 @@
   <FormSettings>
     <Form xsi:type="ItemEdit">
       <DesktopSettings>
-        <SourceLocation DefaultValue="~remoteAppUrl/AppCompose/Home/Home.html"/>
+        <SourceLocation DefaultValue="~remoteAppUrl<%= startPage %>"/>
       </DesktopSettings>
     </Form>
   </FormSettings>
