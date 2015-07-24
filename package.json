@@ -1,0 +1,27 @@
+{
+  "name": "generator-officeaddin",
+  "version": "0.1.0",
+  "description": "Generator Office add-in Angular web appliation",
+  "files": [
+    "app",
+    "router"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "chai": "^1.10.0",
+    "chalk": "^1.0.0",
+    "uuid": "^2.0.1",
+    "vs_projectname": "^1.0.0",
+    "yeoman-generator": "^0.19.0",
+    "yosay": "^1.0.0"
+  },
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
