@@ -1,5 +1,5 @@
 {
-  "name": "outlook",
+  "name": "<%= applicationName %>",
   "version": "1.0.0",
   "license": "MIT",
   "main": "server.js",
