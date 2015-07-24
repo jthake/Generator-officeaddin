@@ -28,40 +28,29 @@ module.exports = yeoman.Base.extend({
 		  name: 'type',
 		  message: 'What type of add-in do you want to create?',
 		  choices: [{
-		      name: 'Angular JS based',
+		      name: 'Angular JS standalone web application',
 		      value: 'angular'
 		    }, {
-		      name: 'HTML based',
-		      value: 'html'
+		      name: 'Outlook add-in',
+		      value: 'outlook'
 		    }
 		  ]
 		}];
 		
 		this.prompt(prompts, function(props) {
-			this.type = props.type;
-			
+			this.templatedata.type = props.type;
 			done();
 		}.bind(this));
 	},
 	
 	askForName: function() {
 		var done = this.async();
-		var app = '';
-		switch (this.type) {
-			case 'angular':
-				app = 'angular';
-				break;
-			case 'html':
-				app = 'html';
-				break;
-		}
 		var prompts = [{
 		  name: 'applicationName',
-		  message: 'What\'s the name of your add-in?',
-		  default: app
+		  message: 'What\'s the name of your add-in?'
 		}];
 		this.prompt(prompts, function(props) {
-		  this.applicationName = props.applicationName;
+		  this.templatedata.applicationName = props.applicationName;
 		  done();
 		}.bind(this));
 	},
@@ -94,23 +83,35 @@ module.exports = yeoman.Base.extend({
 	writing: function() {
 	    this.sourceRoot(path.join(__dirname, './templates/projects'));
 	
-	    switch (this.type) {	
+	    switch (this.templatedata.type) {	
 	      case 'angular':
-	        this.sourceRoot(path.join(__dirname, '../templates/projects/' + this.type));
-	        this.fs.copy(this.sourceRoot() + '/index.html', this.applicationName + '/index.html');
-	        this.fs.copy(this.sourceRoot() + '/styles.css', this.applicationName + '/styles.css');
-	        this.fs.copy(this.templatePath('/assets'), this.destinationPath(this.applicationName + '/assets'));
-	        this.fs.copy(this.templatePath('/controllers'), this.destinationPath(this.applicationName + '/controllers'));
-	        this.fs.copy(this.templatePath('/scripts'), this.destinationPath(this.applicationName + '/scripts'));
-	        this.fs.copy(this.templatePath('/views'), this.destinationPath(this.applicationName + '/views'));
+		    this.templatedata.startPage = "/index.html";
+		    this.templatedata.startDir = "/";
+	        this.sourceRoot(path.join(__dirname, '../templates/projects/' + this.templatedata.type ));
+	        this.fs.copy(this.sourceRoot() + '/index.html', this.templatedata.applicationName + '/index.html');
+	        this.fs.copy(this.sourceRoot() + '/styles.css', this.templatedata.applicationName + '/styles.css');
+	        this.fs.copy(this.templatePath('/assets'), this.destinationPath(this.templatedata.applicationName + '/assets'));
+	        this.fs.copy(this.templatePath('/controllers'), this.destinationPath(this.templatedata.applicationName + '/controllers'));
+	        this.fs.copy(this.templatePath('/scripts'), this.destinationPath(this.templatedata.applicationName + '/scripts'));
+	        this.fs.copy(this.templatePath('/views'), this.destinationPath(this.templatedata.applicationName + '/views'));
 			
 			//inject the environment settings
-			this.fs.copyTpl(this.templatePath('/scripts/app.js'), this.applicationName + '/scripts/app.js', this.templatedata);
+			this.fs.copyTpl(this.templatePath('/scripts/app.js'), this.templatedata.applicationName + '/scripts/app.js', this.templatedata);
+			this.fs.copyTpl(path.join(__dirname, '../templates/projects/server.js'), this.templatedata.applicationName + '/server.js', this.templatedata);
+			this.fs.copyTpl(path.join(__dirname, '../templates/projects/package.json'), this.templatedata.applicationName + '/package.json', this.templatedata);
 	        break;
 	
-	      case 'html':
-	        this.sourceRoot(path.join(__dirname, '../templates/projects/' + this.type));
-	        this.fs.copy(this.sourceRoot() + '/index.html', this.applicationName + '/index.html');
+	      case 'outlook':
+		    this.templatedata.startPage = "/AppCompose/Home/home.html";
+		    this.templatedata.startDir = "/AppCompose";
+	        this.sourceRoot(path.join(__dirname, '../templates/projects/' + this.templatedata.type));
+	        this.fs.copy(this.templatePath('/Content'), this.destinationPath(this.templatedata.applicationName + '/Content'));
+	        this.fs.copy(this.templatePath('/AppCompose/Home'), this.destinationPath(this.templatedata.applicationName + '/AppCompose/Home'));
+			
+			this.fs.copyTpl(this.sourceRoot() + '/manifest.xml', this.templatedata.applicationName + '/manifest.xml', this.templatedata);
+			this.fs.copyTpl(this.sourceRoot() + '/AppCompose/Home/home.html', this.templatedata.applicationName + '/AppCompose/Home/home.html', this.templatedata);
+			this.fs.copyTpl(path.join(__dirname, '../templates/projects/server.js'), this.templatedata.applicationName + '/server.js', this.templatedata);
+			this.fs.copyTpl(path.join(__dirname, '../templates/projects/package.json'), this.templatedata.applicationName + '/package.json', this.templatedata);
 	        break;
 		}
 	},
@@ -118,7 +119,9 @@ module.exports = yeoman.Base.extend({
 	end: function() {
 		this.log('\r\n');
 		this.log('Your project is now created, you can use the following commands to get going');
-		this.log(chalk.green('    cd "' + this.applicationName + '"'));
+		this.log(chalk.green('    cd "' + this.templatedata.applicationName + '"'));
+		this.log(chalk.green('    npm install'));
+		this.log(chalk.green('    node server.js'));
 		this.log('\r\n');
 	}
    

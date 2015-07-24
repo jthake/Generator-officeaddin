@@ -2,6 +2,10 @@
   "name": "generator-officeaddin",
   "version": "0.1.0",
   "description": "Generator Office add-in Angular web appliation",
+  "repository": {
+  "type": "git",
+  "url": "git://github.com/jthake/Generator-officeaddin.git"
+},
   "files": [
     "app",
     "router"
@@ -10,6 +14,9 @@
     "yeoman-generator"
   ],
   "dependencies": {
+    "express": "^4.12.3",
+    "morgan": "^1.5.2",
+    "path": "^0.11.14",
     "chai": "^1.10.0",
     "chalk": "^1.0.0",
     "uuid": "^2.0.1",
