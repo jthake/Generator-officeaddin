@@ -26,9 +26,11 @@ If you are interested in contributions, please reach out to Jeremy Thake (@jthak
 2. Deploy the manifest file to App Catalog in either Exchange or SharePoint
 3. open browser to either Outlook Online, Word Online, PowerPoint Online or Excel Online
 4. pull Azure AD client ID from API after login prompt
-5. don't pull Office.js from here... pull it from NPM
-6. command prompt overrides on "yo officeaddin"
-7. integrate typescript definitions into project
+5. don't pull Office.js from here... pull it from Bower
+6. command prompt overrides on "yo officeaddin" e.g. "yo officeadmin Excel"
+7. integrate typescript definitions into project from DefinitelyTyped.com for intellisense
+8. pull in Office UI fabric from Bower
+9. Project scaffolding for: Angular, Python, PHP, Ruby (alongside just standard HTML/JS that exists)
 
 Should also consider creating a CLI like Azure CLI to do this stuff https://azure.microsoft.com/en-us/documentation/articles/xplat-cli/ https://github.com/Azure/azure-xplat-cli
 
