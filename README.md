@@ -31,6 +31,7 @@ If you are interested in contributions, please reach out to Jeremy Thake (@jthak
 7. integrate typescript definitions into project from DefinitelyTyped.com for intellisense
 8. pull in Office UI fabric from Bower
 9. Project scaffolding for: Angular, NodeJs, Python, PHP, Ruby (alongside just standard HTML/JS that exists)
+10. Use Yeoman Composibility to daisy chain call generators  (http://yeoman.io/authoring/composability.html)
 
 Should also consider creating a CLI like Azure CLI to do this stuff https://azure.microsoft.com/en-us/documentation/articles/xplat-cli/ https://github.com/Azure/azure-xplat-cli
 
